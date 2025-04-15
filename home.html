@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>MOXBET - الصفحة الرئيسية</title>
+    <style>
+        body {
+            background-color: #141A26;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1E2A38;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .admin-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .admin-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎰 MOXBET</h2>
+        <p>رصيدك الحالي: <span id="balance">0</span> جنيه</p>
+        <button onclick="location.href='card_game.html'" style="background-color: orange;">🃏 لعبة الكروت</button>
+        <button onclick="location.href='apple_game.html'" style="background-color: mediumseagreen;">🍏 لعبة التفاح</button>
+        <button onclick="location.href='recharge_code.html'" style="background-color: mediumpurple;">🔋 شحن كود</button>
+        <button onclick="location.href='recharge_telegram.html'" style="background-color: cornflowerblue;">✉️ Telegram شحن عبر</button>
+        <button class="admin-btn" onclick="askPassword()">🔐 دخول الأدمن</button>
+        <button onclick="logout()" style="background-color: #4b5563;">🚪 تسجيل الخروج</button>
+    </div>
+
+    <script>
+        const encryptedPassword = "bWVkbzAwOTk="; // medo0099 مشفرة Base64
+        let attempts = 3;
+
+        function askPassword() {
+            let input = prompt("ادخل كلمة السر للدخول إلى لوحة تحكم الأدمن:");
+            if (!input) return;
+            const userPass = btoa(input);
+            if (userPass === encryptedPassword) {
+                window.location.href = "admin.html";
+            } else {
+                attempts--;
+                if (attempts > 0) {
+                    alert("كلمة السر غير صحيحة! متبقي " + attempts + " محاولات.");
+                } else {
+                    alert("تم تجاوز عدد المحاولات! سيتم طردك من الموقع.");
+                    window.location.href = "https://google.com";
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";
+        }
+
+        window.onload = function () {
+            let currentUser = localStorage.getItem("currentUser");
+            if (currentUser) {
+                let data = JSON.parse(localStorage.getItem(currentUser)) || {};
+                document.getElementById("balance").innerText = data.balance || 0;
+            }
+        };
+    </script>
+</body>
+</html>

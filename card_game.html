@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>لعبة الكروت - MOXBET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md text-center">
+    <h2 class="text-2xl font-bold mb-4">🎴 لعبة الكروت</h2>
+    <p class="mb-2">رصيدك: <span id="balance">0</span> جنيه</p>
+    <input id="betAmount" type="number" placeholder="ادخل مبلغ الرهان" class="w-full mb-4 px-4 py-2 rounded text-black">
+    <button onclick="startRound()" class="bg-yellow-500 text-black w-full py-2 rounded mb-4">🎮 بدء الجولة</button>
+    <div class="flex justify-around mb-4">
+      <button onclick="choose(0)" class="bg-gray-600 p-4 rounded">🂠</button>
+      <button onclick="choose(1)" class="bg-gray-600 p-4 rounded">🂠</button>
+      <button onclick="choose(2)" class="bg-gray-600 p-4 rounded">🂠</button>
+    </div>
+    <p id="result" class="text-lg"></p>
+    <a href="home.html" class="block mt-6 bg-blue-600 py-2 rounded">العودة للرئيسية</a>
+  </div>
+
+  <script>
+    const user = localStorage.getItem("currentUser");
+    const key = user + "_balance";
+    let balance = parseInt(localStorage.getItem(key)) || 0;
+    let bet = 0;
+    let roundStarted = false;
+
+    document.getElementById("balance").textContent = balance;
+
+    function startRound() {
+      bet = parseInt(document.getElementById("betAmount").value);
+      if (!bet || bet <= 0 || bet > balance) return alert("رصيد غير كافي أو مبلغ غير صحيح");
+
+      balance -= bet;
+      localStorage.setItem(key, balance);
+      document.getElementById("balance").textContent = balance;
+      roundStarted = true;
+      document.getElementById("result").textContent = "";
+      const winningCard = Math.floor(Math.random() * 3);
+      localStorage.setItem("card_wins", winningCard);
+    }
+
+    function choose(index) {
+      if (!roundStarted) return alert("ابدأ الجولة أولاً!");
+      roundStarted = false;
+      const correctCard = parseInt(localStorage.getItem("card_wins")) || 0;
+      if (index === correctCard) {
+        balance += bet * 2;
+        document.getElementById("result").textContent = "مبروك! ربحت " + (bet * 2) + " جنيه ✅";
+      } else {
+        document.getElementById("result").textContent = "للأسف خسرت ❌";
+      }
+      localStorage.setItem(key, balance);
+      document.getElementById("balance").textContent = balance;
+    }
+  </script>
+</body>
+</html>

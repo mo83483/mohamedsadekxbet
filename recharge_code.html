@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>شحن الرصيد - MOXBET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen text-center">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4">💳 شحن الرصيد بكود</h2>
+    <p>رصيدك: <span id="balance">0</span> جنيه</p>
+    <form onsubmit="redeemCode(event)" class="mt-4">
+      <input id="code" type="text" placeholder="ادخل كود الشحن" class="w-full mb-3 px-4 py-2 rounded bg-white text-black" required>
+      <button type="submit" class="bg-green-600 w-full py-2 rounded">تأكيد الشحن</button>
+    </form>
+    <p id="status" class="mt-4 text-lg"></p>
+    <a href="home.html" class="block mt-6 bg-blue-600 py-2 rounded">العودة للرئيسية</a>
+  </div>
+
+  <script>
+    const user = localStorage.getItem("currentUser");
+    const key = user + "_balance";
+    const balanceElem = document.getElementById("balance");
+    let balance = parseInt(localStorage.getItem(key)) || 0;
+    balanceElem.textContent = balance;
+
+    function redeemCode(e) {
+      e.preventDefault();
+      const code = document.getElementById("code").value;
+      let codes = JSON.parse(localStorage.getItem("valid_codes")) || [];
+
+      const match = codes.find(c => c.code === code);
+      if (match) {
+        balance += match.value;
+        localStorage.setItem(key, balance);
+        balanceElem.textContent = balance;
+
+        codes = codes.filter(c => c.code !== code);
+        localStorage.setItem("valid_codes", JSON.stringify(codes));
+
+        document.getElementById("status").textContent = "✅ تم الشحن بنجاح!";
+      } else {
+        document.getElementById("status").textContent = "❌ كود غير صحيح أو تم استخدامه.";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تفاصيل التفاحات الكسبانة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { background: #111; color: #0f0; font-family: monospace; padding: 20px; }
+    .row { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h2>🍏 أماكن التفاحات الكسبانة لكل صف:</h2>
+  <div id="data"></div>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("apple_wins") || "[]");
+    const container = document.getElementById("data");
+    if (data.length === 0) {
+      container.innerHTML = "<p>لا توجد بيانات متاحة</p>";
+    } else {
+      data.forEach((row, i) => {
+        const line = document.createElement("div");
+        line.className = "row";
+        line.textContent = `صف ${i+1}: تفاحات كسبانة في المراكز ${row.join(" و ")}`;
+        container.appendChild(line);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>إنشاء حساب - MOXBET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-900 to-blue-700 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white bg-opacity-10 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-full max-w-md text-white">
+    <h2 class="text-2xl font-bold text-center mb-4">إنشاء حساب جديد</h2>
+
+    <form onsubmit="register(event)">
+      <div class="mb-4">
+        <label class="block mb-1 text-sm">اسم المستخدم</label>
+        <input id="username" type="text" required class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 text-white">
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-1 text-sm">كلمة المرور</label>
+        <input id="password" type="password" required class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-20 text-white">
+      </div>
+
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded-lg font-semibold">إنشاء الحساب</button>
+
+      <p class="mt-4 text-center text-sm">عندك حساب؟ <a href="index.html" class="text-blue-300 underline">سجّل الدخول</a></p>
+    </form>
+  </div>
+
+  <script>
+    function register(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      localStorage.setItem("mox_username", username);
+      localStorage.setItem("mox_password", password);
+
+      alert("تم إنشاء الحساب بنجاح!");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

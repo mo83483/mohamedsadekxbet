@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>لعبة التفاح - MOXBET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .apple { width: 50px; height: 50px; border-radius: 50%; display: inline-block; margin: 5px; cursor: pointer; font-size: 30px; line-height: 50px; text-align: center; }
+    .win { color: green; }
+    .lose { color: gray; }
+  </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen text-center">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4">🍏 لعبة التفاح</h2>
+    <p>رصيدك: <span id="balance">0</span> جنيه</p>
+    <input id="bet" type="number" placeholder="ادخل مبلغ الرهان" class="w-full mb-4 px-4 py-2 rounded text-black">
+    <button onclick="startGame()" class="bg-yellow-500 text-black py-2 px-4 rounded mb-4">🎮 بدء الجولة</button>
+    <div id="board" class="mb-4"></div>
+    <button id="cashout" onclick="cashOut()" class="bg-green-600 py-2 px-4 rounded hidden">💰 سحب الأرباح</button>
+    <p id="status" class="mt-4 text-lg"></p>
+    <a href="home.html" class="block mt-6 bg-blue-600 py-2 rounded">العودة للرئيسية</a>
+  </div>
+
+  <script>
+    const user = localStorage.getItem("currentUser");
+    const key = user + "_balance";
+    let currentRow = 0;
+    let balance = parseInt(localStorage.getItem(key)) || 0;
+    let bet = 0;
+    let winnings = 0;
+    let gameActive = false;
+
+    document.getElementById("balance").textContent = balance;
+
+    function generateAppleWins() {
+      let result = [];
+      for (let r = 0; r < 6; r++) {
+        let indexes = [0,1,2,3,4];
+        indexes.sort(() => 0.5 - Math.random());
+        result.push(indexes.slice(0, 2).sort());
+      }
+      localStorage.setItem("apple_wins", JSON.stringify(result));
+      return result;
+    }
+
+    function startGame() {
+      bet = parseInt(document.getElementById("bet").value);
+      if (!bet || bet <= 0 || bet > balance) return alert("أدخل مبلغ صحيح أقل من رصيدك");
+
+      balance -= bet;
+      winnings = 0;
+      currentRow = 0;
+      gameActive = true;
+      document.getElementById("cashout").classList.add("hidden");
+      localStorage.setItem(key, balance);
+      document.getElementById("balance").textContent = balance;
+      document.getElementById("status").textContent = "";
+      appleWins = generateAppleWins();
+      renderBoard();
+    }
+
+    let appleWins = JSON.parse(localStorage.getItem("apple_wins") || "[]");
+
+    function renderBoard() {
+      const board = document.getElementById("board");
+      board.innerHTML = "";
+      for (let r = 0; r < 6; r++) {
+        const row = document.createElement("div");
+        for (let i = 0; i < 5; i++) {
+          const apple = document.createElement("div");
+          apple.className = "apple";
+          apple.innerHTML = "🍎";
+          apple.dataset.row = r;
+          apple.dataset.index = i;
+          if (r === currentRow && gameActive) apple.onclick = chooseApple;
+          row.appendChild(apple);
+        }
+        board.appendChild(row);
+      }
+    }
+
+    function chooseApple(e) {
+      const index = parseInt(e.target.dataset.index);
+      const wins = appleWins[currentRow] || [];
+      if (wins.includes(index)) {
+        e.target.innerHTML = "🍏";
+        e.target.classList.add("win");
+        winnings += bet * 2;
+        currentRow++;
+        document.getElementById("cashout").classList.remove("hidden");
+        if (currentRow >= 6) {
+          document.getElementById("status").textContent = "ربحت الجولة كاملة! 👑";
+          gameActive = false;
+        }
+      } else {
+        e.target.innerHTML = "🍎";
+        e.target.classList.add("lose");
+        document.getElementById("status").textContent = "خسرت! 😢";
+        document.getElementById("cashout").classList.add("hidden");
+        gameActive = false;
+      }
+      renderBoard();
+    }
+
+    function cashOut() {
+      balance += winnings;
+      localStorage.setItem(key, balance);
+      document.getElementById("balance").textContent = balance;
+      document.getElementById("status").textContent = `سحبت أرباحك: ${winnings} جنيه ✅`;
+      winnings = 0;
+      gameActive = false;
+      document.getElementById("cashout").classList.add("hidden");
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>

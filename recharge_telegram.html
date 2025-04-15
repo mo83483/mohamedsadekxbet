@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>شحن عبر Telegram - MOXBET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md text-center">
+    <h2 class="text-xl font-bold mb-4">💳 شحن عبر Telegram</h2>
+    <form onsubmit="sendTelegram(event)">
+      <input id="userPhone" type="text" placeholder="رقم الهاتف الذي تم التحويل منه" class="w-full mb-3 px-4 py-2 rounded bg-white text-black" required>
+      <input id="amount" type="number" placeholder="المبلغ بالجنيه" class="w-full mb-3 px-4 py-2 rounded bg-white text-black" required>
+      <input id="screenshot" type="file" accept="image/*" class="w-full mb-3">
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded">إرسال البيانات</button>
+    </form>
+    <a href="home.html" class="block mt-4 bg-yellow-500 text-black py-2 rounded">العودة للرئيسية</a>
+  </div>
+
+  <script>
+    async function sendTelegram(e) {
+      e.preventDefault();
+      const phone = document.getElementById("userPhone").value;
+      const amount = document.getElementById("amount").value;
+      const message = `📥 طلب شحن\n📱 رقم الهاتف: ${phone}\n💰 المبلغ: ${amount} جنيه`;
+      const token = "7862272869:AAGqwHPXR4JBs79666uATBvs8kTealEV-cM";
+      const chatId = "8079877058";
+
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message
+        })
+      })
+      .then(() => alert("تم إرسال البيانات بنجاح ✅"))
+      .catch(() => alert("حدث خطأ في الإرسال ❌"));
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>الكارت الكسبان</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { background: #111; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>🎴 الكارت الصحيح الحالي</h2>
+  <p id="card" style="font-size: 2em; margin-top: 20px;"></p>
+
+  <script>
+    const correct = localStorage.getItem("card_wins");
+    document.getElementById("card").textContent = correct !== null ? `🂠 رقم الكارت الصحيح هو: ${parseInt(correct) + 1}` : "لا توجد بيانات.";
+  </script>
+</body>
+</html>

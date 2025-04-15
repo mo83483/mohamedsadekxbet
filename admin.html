@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>لوحة تحكم الأدمن - MOXBET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md text-center">
+    <h2 class="text-2xl font-bold mb-4">🛠️ لوحة تحكم الأدمن</h2>
+    <input id="code" type="text" placeholder="كود شحن جديد" class="w-full mb-3 px-4 py-2 text-black rounded">
+    <input id="value" type="number" placeholder="قيمة الشحن" class="w-full mb-3 px-4 py-2 text-black rounded">
+    <button onclick="addCode()" class="bg-purple-600 w-full py-2 rounded mb-4">إضافة الكود</button>
+
+    <p class="mt-4">التفاحات الكسبانة (apple_wins.json)</p>
+    <textarea id="appleWins" rows="6" class="w-full text-black p-2 rounded"></textarea>
+
+    <p class="mt-4">الكارت الكسبان (card_wins.json)</p>
+    <input id="cardWin" type="number" class="w-full text-black px-4 py-2 rounded">
+
+    <button onclick="saveWins()" class="bg-green-600 w-full mt-4 py-2 rounded">حفظ الملفات</button>
+  </div>
+
+  <script>
+    function addCode() {
+      const c = document.getElementById("code").value;
+      const v = parseInt(document.getElementById("value").value);
+      if (!c || isNaN(v)) return alert("بيانات غير صالحة");
+      const codes = JSON.parse(localStorage.getItem("valid_codes") || "[]");
+      codes.push({ code: c, value: v });
+      localStorage.setItem("valid_codes", JSON.stringify(codes));
+      alert("تمت الإضافة ✅");
+    }
+
+    function saveWins() {
+      localStorage.setItem("apple_wins", document.getElementById("appleWins").value);
+      localStorage.setItem("card_wins", document.getElementById("cardWin").value);
+      alert("تم حفظ بيانات الفوز ✅");
+    }
+  </script>
+</body>
+</html>
