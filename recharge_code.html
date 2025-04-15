@@ -2,19 +2,21 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>شحن الرصيد - MOXBET</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>شحن الرصيد بكود</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen text-center">
   <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-4">💳 شحن الرصيد بكود</h2>
-    <p>رصيدك: <span id="balance">0</span> جنيه</p>
-    <form onsubmit="redeemCode(event)" class="mt-4">
-      <input id="code" type="text" placeholder="ادخل كود الشحن" class="w-full mb-3 px-4 py-2 rounded bg-white text-black" required>
-      <button type="submit" class="bg-green-600 w-full py-2 rounded">تأكيد الشحن</button>
+    <h2 class="text-2xl font-bold mb-4">شحن الرصيد بكود 🔐</h2>
+    <p class="mb-4">رصيدك: <span id="balance">0</span> جنيه</p>
+
+    <form onsubmit="checkCode(event)">
+      <input type="text" id="codeInput" placeholder="ادخل كود الشحن" required class="w-full mb-3 px-4 py-2 text-black rounded">
+      <button type="submit" class="w-full bg-green-600 py-2 rounded hover:bg-green-700">تأكيد الشحن</button>
     </form>
+
     <p id="status" class="mt-4 text-lg"></p>
     <a href="home.html" class="block mt-6 bg-blue-600 py-2 rounded">العودة للرئيسية</a>
   </div>
@@ -22,30 +24,47 @@
   <script>
     const user = localStorage.getItem("currentUser");
     const key = user + "_balance";
-    const balanceElem = document.getElementById("balance");
     let balance = parseInt(localStorage.getItem(key)) || 0;
-    balanceElem.textContent = balance;
+    document.getElementById("balance").textContent = balance;
 
-    function redeemCode(e) {
+    async function checkCode(e) {
       e.preventDefault();
-      const code = document.getElementById("code").value;
-      let codes = JSON.parse(localStorage.getItem("valid_codes")) || [];
+      const code = document.getElementById("codeInput").value.trim();
+      const status = document.getElementById("status");
 
-      const match = codes.find(c => c.code === code);
-      if (match) {
-        balance += match.value;
-        localStorage.setItem(key, balance);
-        balanceElem.textContent = balance;
+      try {
+        // جلب الأكواد من Google Sheets
+        const res = await fetch("https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjrRreVQa8E4exs_oyWmrJabo2DKKwAH72JnMhZ_uVoTsUlh9rUIlb-uAFbQKJIxBUAGt6WfqAo4Us3nfvvJxgLEddeuaTuLBp7lKVJRQuY9l_HSyoNMpAwjEK0tHKZtDzM36wwJ6_CAF1pS06cEVwELgz4Yfg9uzt95E5MIlM42VSssiCreG9x2c1jhsm3Cb3Jpf-aGgbgT-R9dT9GvD4p5KtUbtgz7UVPr62qtGTNthiMhkkeoAiGrcQI3VswzY-aM9ep7uPYzBRP1ohG4dCYbvekOaEN39vf0Kdw&lib=MS2lvpt0doSQE2mtetsDwFgXb7P6Aw0jh");
+        const codes = await res.json();
+        const found = codes.find(c => c.code === code);
 
-        codes = codes.filter(c => c.code !== code);
-        localStorage.setItem("valid_codes", JSON.stringify(codes));
+        if (found) {
+          // شحن الرصيد
+          balance += parseInt(found.value);
+          localStorage.setItem(key, balance);
+          document.getElementById("balance").textContent = balance;
 
-        document.getElementById("status").textContent = "✅ تم الشحن بنجاح!";
-      } else {
-        document.getElementById("status").textContent = "❌ كود غير صحيح أو تم استخدامه.";
+          // حذف الكود تلقائيًا من Google Sheet
+          await fetch("https://script.google.com/macros/s/AKfycbzglMRaEE9cofwzUPFRrUnR9RVqdN_9rnKj7U6OUVPb1y6w70Pn-TiMEVN9GxZ1nX27/exec", {
+            method: "POST",
+            body: new URLSearchParams({ code })
+          });
+
+          status.textContent = "✅ تم شحن الرصيد بنجاح!";
+          status.classList.remove("text-red-500");
+          status.classList.add("text-green-400");
+        } else {
+          status.textContent = "❌ الكود غير صالح أو تم استخدامه.";
+          status.classList.remove("text-green-400");
+          status.classList.add("text-red-500");
+        }
+
+      } catch (err) {
+        status.textContent = "❌ حدث خطأ أثناء التحقق من الكود.";
+        status.classList.add("text-red-500");
+        console.error(err);
       }
     }
   </script>
-  <script src="remove_used_code.js"></script>
 </body>
 </html>
